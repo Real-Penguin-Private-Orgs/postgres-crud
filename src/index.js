@@ -23,6 +23,12 @@ app.get('/', async(req, res) => {
     res.json(data);
 });
 
+app.get('/posts/:id', async(req, res) => {
+    let {  id } = req.params
+    let postData = await knex('posts').where('id', id)
+    res.json(postData)
+})
+
 app.post('/register', (req, res) => {
     let {username, email, password} = req.body;
     var saltRounds = 10;
@@ -50,13 +56,45 @@ app.post('/register', (req, res) => {
     })
 })
 
+app.post('/login', (req, res) => {
+        let { username, password } = req.body;
+        if(!username || !password) {
+            return res.status(406).json({
+                message: 'Field Cant Be Empty'
+            })
+        }
+
+        knex('users').where({ 
+            username: username
+        }).select('*')
+        .then((result) => {
+            if (!result || !result[0])  {  // not found!
+                res.status(404).json({message: 'User Not Found'})
+                return;
+              }
+              var pass = result[0].password;
+              bcrypt.compare(password, pass, (err, response) => {
+                    if(err) throw err;
+                    if(response) {
+                        return res.json(result);
+                    } else {
+                        return res.json({message: 'Wrong Password'})
+                    }
+              })
+        })
+        .catch((err) => {
+            console.error(err);
+        })
+})
+
 app.get('/users/:id', async(req, res) => {
     let {  id } = req.params
     let userData = await knex('users').where('id', id)
     if(!userData) {
         return res.status(404).send('User Not Found')
-    } 
-       res.json(userData)
+    }  else {
+        return res.json(userData)
+    }   
 })
 
 app.listen(PORT, () => {
