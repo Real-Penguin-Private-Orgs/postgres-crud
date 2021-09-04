@@ -13,7 +13,8 @@ exports.seed = (knex) => {
             {
               id: 1,
               title: 'Hello World',
-              body: 'Created By Wisly'
+              body: 'Created By Wisly',
+              author: 'RealPenguin'
             }
       ]);
     });

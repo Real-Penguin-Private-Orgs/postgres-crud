@@ -1,3 +1,4 @@
 module.exports = {
-        posts: 'posts'
+        posts: 'posts',
+        users: 'users'
 }
